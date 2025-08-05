@@ -8,7 +8,7 @@ export const RunningAnimal = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     className="animate-running"
-    style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.18))' }}
+    style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.18))" }}
   >
     {/* Simple stylized running cheetah */}
     <g>
@@ -22,7 +22,14 @@ export const RunningAnimal = () => (
       />
       <circle cx="14" cy="30" r="3" fill="#eab308" />
       <circle cx="50" cy="28" r="3" fill="#eab308" />
-      <circle cx="32" cy="28" r="7" fill="#fde68a" stroke="#eab308" strokeWidth="2" />
+      <circle
+        cx="32"
+        cy="28"
+        r="7"
+        fill="#fde68a"
+        stroke="#eab308"
+        strokeWidth="2"
+      />
       <ellipse cx="36" cy="25" rx="1.5" ry="1" fill="#000" />
       <ellipse cx="28" cy="25" rx="1.5" ry="1" fill="#000" />
       <ellipse cx="32" cy="30" rx="2" ry="1.2" fill="#000" opacity=".4" />

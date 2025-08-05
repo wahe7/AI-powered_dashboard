@@ -11,7 +11,10 @@ interface DateRangePickerProps {
   onChange: (range: { startDate: Date; endDate: Date }) => void;
 }
 
-export function PopoverDateRangePicker({ range, onChange }: DateRangePickerProps) {
+export function PopoverDateRangePicker({
+  range,
+  onChange,
+}: DateRangePickerProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
 
@@ -25,7 +28,13 @@ export function PopoverDateRangePicker({ range, onChange }: DateRangePickerProps
         onClick={() => setOpen(!open)}
       >
         <span className="mr-2">{display}</span>
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" className="inline">
+        <svg
+          width="18"
+          height="18"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="inline"
+        >
           <path stroke="currentColor" strokeWidth="2" d="M6 9l6 6 6-6" />
         </svg>
       </Popover.Button>
@@ -39,11 +48,13 @@ export function PopoverDateRangePicker({ range, onChange }: DateRangePickerProps
             }
           }}
           moveRangeOnFirstSelection={false}
-          ranges={[{
-            startDate: range.startDate,
-            endDate: range.endDate,
-            key: 'selection',
-          }]}
+          ranges={[
+            {
+              startDate: range.startDate,
+              endDate: range.endDate,
+              key: "selection",
+            },
+          ]}
           maxDate={new Date()}
           rangeColors={["#6366f1"]}
         />

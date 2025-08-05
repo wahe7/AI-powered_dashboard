@@ -22,11 +22,13 @@ export function DateRangePicker({ range, onChange }: DateRangePickerProps) {
           }
         }}
         moveRangeOnFirstSelection={false}
-        ranges={[{
-          startDate: range.startDate,
-          endDate: range.endDate,
-          key: 'selection',
-        }]}
+        ranges={[
+          {
+            startDate: range.startDate,
+            endDate: range.endDate,
+            key: "selection",
+          },
+        ]}
         maxDate={new Date()}
         rangeColors={["#6366f1"]}
       />

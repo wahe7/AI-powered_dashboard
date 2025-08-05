@@ -11,7 +11,7 @@ export function Card({ children, className }: CardProps) {
     <div
       className={cn(
         "rounded-xl bg-card text-card-foreground shadow-md p-6 transition-all duration-300 hover:shadow-xl",
-        className
+        className,
       )}
     >
       {children}
