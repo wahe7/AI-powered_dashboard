@@ -20,16 +20,20 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   // CSV Export helper
-  function exportToCSV(rows: any[]) {
+  function exportToCSV(rows: unknown[]) {
     if (!rows.length) return;
-    const header = Object.keys(rows[0].original).join(",");
+    const firstOriginal = typeof rows[0] === 'object' && rows[0] !== null && 'original' in rows[0] ? (rows[0] as { original: Record<string, unknown> }).original : {};
+    const header = Object.keys(firstOriginal).join(",");
     const csv = [
       header,
-      ...rows.map((r) =>
-        Object.values(r.original)
-          .map((v: any) => `"${String(v).replace(/"/g, '""')}"`)
-          .join(","),
-      ),
+      ...rows.map((r) => {
+        if (typeof r === 'object' && r !== null && 'original' in r) {
+          return Object.values((r as { original: Record<string, unknown> }).original)
+            .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+            .join(",");
+        }
+        return '';
+      }),
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);

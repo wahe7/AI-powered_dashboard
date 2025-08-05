@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { Popover } from "@headlessui/react";
-import { DateRange, Range } from "react-date-range";
+import { DateRange } from "react-date-range";
 import { format } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";

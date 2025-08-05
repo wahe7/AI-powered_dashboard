@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { DateRange, Range } from "react-date-range";
-import { addDays } from "date-fns";
+import { DateRange } from "react-date-range";
+
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
