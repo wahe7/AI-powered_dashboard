@@ -5,9 +5,9 @@ import { Home, BarChart2, Settings, X, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Overview", href: "/", icon: Home },
-  { label: "Reports", href: "/reports", icon: BarChart2 },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Overview", href: "/dashboard/overview", icon: Home },
+  { label: "Reports", href: "/dashboard/reporting", icon: BarChart2 },
+  { label: "Settings", href: "/dashboard/setting", icon: Settings },
 ];
 
 export function MobileSidebarDrawer() {
