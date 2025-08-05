@@ -2,6 +2,8 @@
 
 import { Card, Skeleton } from "@/components/ui";
 import { RunningAnimal } from "@/components/ui/RunningAnimal";
+import { CampaignFilter } from "@/components/ui/CampaignFilter";
+import { SourceFilter } from "@/components/ui/SourceFilter";
 import React, { useState, useEffect } from "react";
 import { LineChart, BarChart, PieChart } from "@/components/charts";
 import { DataTable } from "@/components/table/DataTable";
@@ -20,6 +22,15 @@ function randomizeMetrics() {
     { label: "Growth %", value: `${(Math.random() * 5 + 1).toFixed(1)}%`, change: `+${getRandomInt(1,4)}%`, color: "text-yellow-600" },
   ];
 }
+
+// For filters
+const ALL_CAMPAIGNS = ['Campaign A', 'Campaign B', 'Campaign C', 'Campaign D', 'Campaign E'];
+const ALL_SOURCES = [
+  { name: 'Search', color: '#6366f1' },
+  { name: 'Social', color: '#34d399' },
+  { name: 'Email', color: '#f59e42' },
+  { name: 'Referral', color: '#f472b6' },
+];
 
 function randomizeLineChart() {
 
@@ -90,6 +101,9 @@ function randomizeTable() {
 import { PopoverDateRangePicker } from "@/components/ui/PopoverDateRangePicker";
 
 export default function OverviewPage() {
+  // Filter state
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([...ALL_CAMPAIGNS]);
+  const [selectedSources, setSelectedSources] = useState<string[]>(ALL_SOURCES.map(s => s.name));
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState<null | { label: string; value: string; change: string; color: string }[]>(null);
   const [lineData, setLineData] = useState<null | { name: string; value: number; date: string }[] | null>(null);
@@ -129,7 +143,7 @@ export default function OverviewPage() {
       setBarSeries(randomizeBarChartSeries());
       setPieSeries(randomizePieChartSeries());
       setTable(randomizeTable());
-    }, 5000);
+    }, 10000);
     return () => clearInterval(interval);
   }, [loading]);
 
@@ -138,18 +152,27 @@ export default function OverviewPage() {
     return d >= dateRange.startDate && d <= dateRange.endDate;
   }
 
-  const filteredLineData = lineData ? lineData.filter(d => isInRange(d.date)) : [];
-  const filteredBarData = CAMPAIGNS.map(name => ({
+  // Filtered data helpers
+  const filteredLineData = lineData
+    ? lineData.filter(d => isInRange(d.date))
+    : [];
+
+  const filteredBarData = ALL_CAMPAIGNS.filter(name => selectedCampaigns.includes(name)).map(name => ({
     name,
-    value: barSeries ? barSeries.filter(d => d.name === name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0) : 0
-  }));
-  const filteredPieData = SOURCES.map(source => ({
-    name: source.name,
-    color: source.color,
-    value: pieSeries ? pieSeries.filter(d => d.name === source.name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0) : 0
+    value: barSeries
+      ? barSeries.filter(d => d.name === name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0)
+      : 0
   }));
 
-  const filteredTable = CAMPAIGNS.map(campaign => {
+  const filteredPieData = ALL_SOURCES.filter(source => selectedSources.includes(source.name)).map(source => ({
+    name: source.name,
+    color: source.color,
+    value: pieSeries
+      ? pieSeries.filter(d => d.name === source.name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0)
+      : 0
+  }));
+
+  const filteredTable = ALL_CAMPAIGNS.filter(campaign => selectedCampaigns.includes(campaign)).map(campaign => {
     const rows = table ? table.filter(d => d.campaign === campaign && isInRange(d.date)) : [];
     if (rows.length === 0) {
       const impressions = getRandomInt(100, 500);
@@ -174,9 +197,19 @@ export default function OverviewPage() {
   return (
     <>
       <div className="w-full flex flex-col md:flex-row md:items-center gap-4 md:gap-8 justify-between mb-6">
-        <div>
-          <span className="font-semibold text-lg mr-2">Date Range:</span>
-          <PopoverDateRangePicker range={dateRange} onChange={setDateRange} />
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div>
+            <span className="font-semibold text-lg mr-2">Date Range:</span>
+            <PopoverDateRangePicker range={dateRange} onChange={setDateRange} />
+          </div>
+          <div>
+            <span className="font-semibold text-lg mr-2">Campaigns:</span>
+            <CampaignFilter campaigns={ALL_CAMPAIGNS} selected={selectedCampaigns} onChange={setSelectedCampaigns} />
+          </div>
+          <div>
+            <span className="font-semibold text-lg mr-2">Channels:</span>
+            <SourceFilter sources={ALL_SOURCES} selected={selectedSources} onChange={setSelectedSources} />
+          </div>
         </div>
       </div>
       {loading && (
