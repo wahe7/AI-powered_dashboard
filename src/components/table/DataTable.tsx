@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useReactTable, getCoreRowModel, flexRender, getSortedRowModel, getFilteredRowModel, ColumnDef } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, getSortedRowModel, getFilteredRowModel, ColumnDef, SortingState } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -22,7 +22,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     URL.revokeObjectURL(url);
   }
 
-  const [sorting, setSorting] = React.useState([]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({

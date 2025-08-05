@@ -176,13 +176,17 @@ export default function OverviewPage() {
     const rows = table ? table.filter(d => d.campaign === campaign && isInRange(d.date)) : [];
     if (rows.length === 0) {
       const impressions = getRandomInt(100, 500);
+      const clicks = getRandomInt(Math.floor(impressions * 0.05), Math.floor(impressions * 0.2));
+      const conversions = getRandomInt(Math.floor(clicks * 0.05), Math.max(1, Math.floor(clicks * 0.2)));
+      const ctr = ((clicks / impressions) * 100).toFixed(1) + '%';
+      const cvr = ((conversions / clicks) * 100).toFixed(1) + '%';
       return {
         campaign,
         impressions,
-        clicks: 0,
-        conversions: 0,
-        ctr: '0%',
-        cvr: '0%',
+        clicks,
+        conversions,
+        ctr,
+        cvr,
         date: ''
       };
     }
