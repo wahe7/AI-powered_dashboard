@@ -8,6 +8,20 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  // CSV Export helper
+  function exportToCSV(rows: any[]) {
+    if (!rows.length) return;
+    const header = Object.keys(rows[0].original).join(",");
+    const csv = [header, ...rows.map(r => Object.values(r.original).map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const [sorting, setSorting] = React.useState([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
 
@@ -25,14 +39,24 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <div className="w-full overflow-x-auto rounded-xl shadow bg-card">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-4 gap-2 flex-wrap">
         <input
           className="border rounded px-3 py-1 text-sm w-60 focus:outline-none focus:ring"
           placeholder="Search..."
           value={globalFilter}
           onChange={e => setGlobalFilter(e.target.value)}
         />
+        <button
+          className="ml-2 px-4 py-1 rounded bg-primary text-primary-foreground text-sm font-semibold shadow hover:bg-primary/90 transition"
+          onClick={() => exportToCSV(table.getFilteredRowModel().rows)}
+        >
+          Export CSV
+        </button>
       </div>
+
+      {/* CSV Export helper function */}
+      {/* Place this function inside the DataTable component */}
+      
       <table className="min-w-full divide-y divide-border">
         <thead className="bg-muted">
           {table.getHeaderGroups().map(headerGroup => (
