@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { Popover } from "@headlessui/react";
-import { DateRange, RangeKeyDict } from "react-date-range";
+import { DateRange, Range } from "react-date-range";
 import { format } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -41,7 +41,7 @@ export function PopoverDateRangePicker({
       <Popover.Panel className="absolute z-50 mt-2 left-0 bg-card rounded-xl shadow-lg border p-2">
         <DateRange
           editableDateInputs={true}
-          onChange={(item: RangeKeyDict) => {
+          onChange={(item: { selection: { startDate?: Date; endDate?: Date } }) => {
             const sel = item.selection;
             if (sel.startDate && sel.endDate) {
               onChange({ startDate: sel.startDate, endDate: sel.endDate });
