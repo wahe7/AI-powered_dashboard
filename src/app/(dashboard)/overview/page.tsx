@@ -175,9 +175,9 @@ export default function OverviewPage() {
               ))}
             </div>
           </div>
-        ) : (
-          <DataTable columns={columns} data={tableData} />
-        )}
+        ) : table ? (
+          <DataTable columns={columns} data={table} />
+        ) : null}
       </div>
     </section>
     </>
