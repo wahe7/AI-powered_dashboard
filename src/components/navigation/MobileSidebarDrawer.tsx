@@ -49,17 +49,12 @@ export function MobileSidebarDrawer() {
         </div>
         <nav className="flex flex-col gap-2">
           {navItems.map(({ label, href, icon: Icon }) => (
-            <Link key={href} href={href} passHref legacyBehavior>
-              <a
-                className={cn(
-                  "flex items-center gap-3 px-4 py-2 rounded-lg transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-base font-medium",
-                  pathname === href && "bg-sidebar-primary text-sidebar-primary-foreground"
-                )}
-                onClick={() => setOpen(false)}
-              >
-                <Icon className="w-5 h-5" />
-                <span>{label}</span>
-              </a>
+            <Link key={href} href={href} className={cn(
+              "flex items-center gap-3 px-4 py-2 rounded-lg transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-base font-medium",
+              pathname === href && "bg-sidebar-primary text-sidebar-primary-foreground"
+            )} onClick={() => setOpen(false)}>
+              <Icon className="w-5 h-5" />
+              <span>{label}</span>
             </Link>
           ))}
         </nav>

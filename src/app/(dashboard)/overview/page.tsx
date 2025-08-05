@@ -8,20 +8,89 @@ import { DataTable } from "@/components/table/DataTable";
 import { columns } from "@/components/table/columns";
 import { lineChartData, barChartData, pieChartData, tableData } from "@/lib/mockData";
 
-const metrics = [
-  { label: "Revenue", value: "$42,500", change: "+12%", color: "text-green-600" },
-  { label: "Users", value: "8,900", change: "+5%", color: "text-blue-600" },
-  { label: "Conversions", value: "1,200", change: "+8%", color: "text-purple-600" },
-  { label: "Growth %", value: "3.2%", change: "+2%", color: "text-yellow-600" },
-];
+function getRandomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomizeMetrics() {
+  return [
+    { label: "Revenue", value: `$${getRandomInt(35000, 55000).toLocaleString()}`, change: `+${getRandomInt(5,15)}%`, color: "text-green-600" },
+    { label: "Users", value: getRandomInt(7000, 12000).toLocaleString(), change: `+${getRandomInt(2,8)}%`, color: "text-blue-600" },
+    { label: "Conversions", value: getRandomInt(900, 1600).toLocaleString(), change: `+${getRandomInt(1,10)}%`, color: "text-purple-600" },
+    { label: "Growth %", value: `${(Math.random() * 5 + 1).toFixed(1)}%`, change: `+${getRandomInt(1,4)}%`, color: "text-yellow-600" },
+  ];
+}
+
+function randomizeLineChart() {
+  return [
+    { name: 'Jan', value: getRandomInt(3000, 6000) },
+    { name: 'Feb', value: getRandomInt(3000, 6000) },
+    { name: 'Mar', value: getRandomInt(3000, 7000) },
+    { name: 'Apr', value: getRandomInt(3000, 7000) },
+    { name: 'May', value: getRandomInt(4000, 8000) },
+    { name: 'Jun', value: getRandomInt(3000, 7000) },
+    { name: 'Jul', value: getRandomInt(3000, 7000) },
+  ];
+}
+
+function randomizeBarChart() {
+  return [
+    { name: 'Campaign A', value: getRandomInt(2000, 9000) },
+    { name: 'Campaign B', value: getRandomInt(1000, 6000) },
+    { name: 'Campaign C', value: getRandomInt(5000, 12000) },
+    { name: 'Campaign D', value: getRandomInt(2000, 7000) },
+    { name: 'Campaign E', value: getRandomInt(2000, 8000) },
+  ];
+}
+
+function randomizePieChart() {
+  return [
+    { name: 'Search', value: getRandomInt(200, 600), color: '#6366f1' },
+    { name: 'Social', value: getRandomInt(200, 600), color: '#34d399' },
+    { name: 'Email', value: getRandomInt(200, 600), color: '#f59e42' },
+    { name: 'Referral', value: getRandomInt(100, 400), color: '#f472b6' },
+  ];
+}
+
+function randomizeTable() {
+  return [
+    { campaign: 'Campaign A', impressions: getRandomInt(8000, 14000), clicks: getRandomInt(600, 1200), conversions: getRandomInt(80, 200), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
+    { campaign: 'Campaign B', impressions: getRandomInt(7000, 12000), clicks: getRandomInt(500, 1100), conversions: getRandomInt(70, 180), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
+    { campaign: 'Campaign C', impressions: getRandomInt(9000, 15000), clicks: getRandomInt(700, 1400), conversions: getRandomInt(90, 220), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
+    { campaign: 'Campaign D', impressions: getRandomInt(6000, 11000), clicks: getRandomInt(400, 900), conversions: getRandomInt(60, 140), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
+    { campaign: 'Campaign E', impressions: getRandomInt(9000, 13000), clicks: getRandomInt(700, 1200), conversions: getRandomInt(90, 180), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
+  ];
+}
 
 export default function OverviewPage() {
   const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState<null | { label: string; value: string; change: string; color: string }[]>(null);
+  const [lineData, setLineData] = useState<null | { name: string; value: number }[]>(null);
+  const [barData, setBarData] = useState<null | { name: string; value: number }[]>(null);
+  const [pieData, setPieData] = useState<null | { name: string; value: number; color: string }[]>(null);
+  const [table, setTable] = useState<null | { campaign: string; impressions: number; clicks: number; conversions: number; ctr: string; cvr: string }[]>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
+    setMetrics(randomizeMetrics());
+    setLineData(randomizeLineChart());
+    setBarData(randomizeBarChart());
+    setPieData(randomizePieChart());
+    setTable(randomizeTable());
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    const interval = setInterval(() => {
+      setMetrics(randomizeMetrics());
+      setLineData(randomizeLineChart());
+      setBarData(randomizeBarChart());
+      setPieData(randomizePieChart());
+      setTable(randomizeTable());
+    }, 5000); // update every 5 seconds
+    return () => clearInterval(interval);
+  }, [loading]);
 
   return (
     <>
@@ -36,7 +105,7 @@ export default function OverviewPage() {
       <section className="w-full max-w-7xl mx-auto pt-8">
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {loading
+        {loading || !metrics
           ? Array(4).fill(0).map((_, i) => (
               <Card key={i} className="flex flex-col gap-2 items-start justify-center min-h-[120px]">
                 <Skeleton className="w-20 h-4 mb-2" />
@@ -44,10 +113,12 @@ export default function OverviewPage() {
                 <Skeleton className="w-16 h-3" />
               </Card>
             ))
-          : metrics.map((metric) => (
-              <Card key={metric.label} className="flex flex-col gap-2 items-start justify-center min-h-[120px]">
+          : metrics.map((metric: { label: string; value: string; change: string; color: string }) => (
+              <Card key={metric.label} className="flex flex-col gap-2 items-start justify-center min-h-[120px] transition-all duration-500">
                 <div className="text-sm text-muted-foreground font-medium">{metric.label}</div>
-                <div className="text-3xl font-bold text-foreground">{metric.value}</div>
+                <div className="text-3xl font-bold text-foreground animate-pulse">
+                  {metric.value}
+                </div>
                 <div className={`text-xs font-semibold ${metric.color}`}>{metric.change} this month</div>
               </Card>
             ))}
