@@ -22,61 +22,102 @@ function randomizeMetrics() {
 }
 
 function randomizeLineChart() {
-  return [
-    { name: 'Jan', value: getRandomInt(3000, 6000) },
-    { name: 'Feb', value: getRandomInt(3000, 6000) },
-    { name: 'Mar', value: getRandomInt(3000, 7000) },
-    { name: 'Apr', value: getRandomInt(3000, 7000) },
-    { name: 'May', value: getRandomInt(4000, 8000) },
-    { name: 'Jun', value: getRandomInt(3000, 7000) },
-    { name: 'Jul', value: getRandomInt(3000, 7000) },
-  ];
+
+  const days = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    return d;
+  }).reverse();
+  return days.map(d => ({
+    name: d.toISOString().slice(5, 10), 
+    date: d.toISOString().slice(0, 10), 
+    value: getRandomInt(3000, 8000)
+  }));
 }
 
-function randomizeBarChart() {
-  return [
-    { name: 'Campaign A', value: getRandomInt(2000, 9000) },
-    { name: 'Campaign B', value: getRandomInt(1000, 6000) },
-    { name: 'Campaign C', value: getRandomInt(5000, 12000) },
-    { name: 'Campaign D', value: getRandomInt(2000, 7000) },
-    { name: 'Campaign E', value: getRandomInt(2000, 8000) },
-  ];
+
+const CAMPAIGNS = ['Campaign A', 'Campaign B', 'Campaign C', 'Campaign D', 'Campaign E'];
+
+function randomizeBarChartSeries() {
+  const days = Array.from({length: 30}, (_, i) => {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    return d.toISOString().slice(0, 10);
+  });
+  const series: { name: string; date: string; value: number }[] = [];
+  for (const campaign of CAMPAIGNS) {
+    for (const date of days) {
+      series.push({ name: campaign, date, value: getRandomInt(100, 800) });
+    }
+  }
+  return series;
 }
 
-function randomizePieChart() {
-  return [
-    { name: 'Search', value: getRandomInt(200, 600), color: '#6366f1' },
-    { name: 'Social', value: getRandomInt(200, 600), color: '#34d399' },
-    { name: 'Email', value: getRandomInt(200, 600), color: '#f59e42' },
-    { name: 'Referral', value: getRandomInt(100, 400), color: '#f472b6' },
-  ];
+
+const SOURCES = [
+  { name: 'Search', color: '#6366f1' },
+  { name: 'Social', color: '#34d399' },
+  { name: 'Email', color: '#f59e42' },
+  { name: 'Referral', color: '#f472b6' },
+];
+
+function randomizePieChartSeries() {
+  const days = Array.from({length: 30}, (_, i) => {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    return d.toISOString().slice(0, 10);
+  });
+  const series: { name: string; date: string; value: number; color: string }[] = [];
+  for (const source of SOURCES) {
+    for (const date of days) {
+      series.push({ name: source.name, color: source.color, date, value: getRandomInt(20, 100) });
+    }
+  }
+  return series;
 }
+
 
 function randomizeTable() {
-  return [
-    { campaign: 'Campaign A', impressions: getRandomInt(8000, 14000), clicks: getRandomInt(600, 1200), conversions: getRandomInt(80, 200), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
-    { campaign: 'Campaign B', impressions: getRandomInt(7000, 12000), clicks: getRandomInt(500, 1100), conversions: getRandomInt(70, 180), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
-    { campaign: 'Campaign C', impressions: getRandomInt(9000, 15000), clicks: getRandomInt(700, 1400), conversions: getRandomInt(90, 220), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
-    { campaign: 'Campaign D', impressions: getRandomInt(6000, 11000), clicks: getRandomInt(400, 900), conversions: getRandomInt(60, 140), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
-    { campaign: 'Campaign E', impressions: getRandomInt(9000, 13000), clicks: getRandomInt(700, 1200), conversions: getRandomInt(90, 180), ctr: `${(Math.random()*3+6).toFixed(1)}%`, cvr: `${(Math.random()*3+13).toFixed(1)}%` },
-  ];
+  const campaigns = ['Campaign A', 'Campaign B', 'Campaign C', 'Campaign D', 'Campaign E'];
+  return campaigns.map(campaign => ({
+    campaign,
+    impressions: getRandomInt(6000, 15000),
+    clicks: getRandomInt(400, 1400),
+    conversions: getRandomInt(60, 220),
+    ctr: `${(Math.random()*3+6).toFixed(1)}%`,
+    cvr: `${(Math.random()*3+13).toFixed(1)}%`,
+    date: new Date(Date.now() - getRandomInt(0, 29) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  }));
 }
+
+import { PopoverDateRangePicker } from "@/components/ui/PopoverDateRangePicker";
 
 export default function OverviewPage() {
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState<null | { label: string; value: string; change: string; color: string }[]>(null);
-  const [lineData, setLineData] = useState<null | { name: string; value: number }[]>(null);
-  const [barData, setBarData] = useState<null | { name: string; value: number }[]>(null);
-  const [pieData, setPieData] = useState<null | { name: string; value: number; color: string }[]>(null);
-  const [table, setTable] = useState<null | { campaign: string; impressions: number; clicks: number; conversions: number; ctr: string; cvr: string }[]>(null);
+  const [lineData, setLineData] = useState<null | { name: string; value: number; date: string }[] | null>(null);
+  const [barSeries, setBarSeries] = useState<null | { name: string; value: number; date: string }[] | null>(null);
+  const [pieSeries, setPieSeries] = useState<null | { name: string; value: number; color: string; date: string }[] | null>(null);
+  const [table, setTable] = useState<null | { campaign: string; impressions: number; clicks: number; conversions: number; ctr: string; cvr: string; date: string }[] | null>(null);
+
+  const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+    endDate: new Date(),
+  });
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
-    setMetrics(randomizeMetrics());
-    setLineData(randomizeLineChart());
-    setBarData(randomizeBarChart());
-    setPieData(randomizePieChart());
-    setTable(randomizeTable());
+
+    setMetrics(null);
+    setLineData(null);
+    setBarSeries(null);
+    setPieSeries(null);
+    setTable(null);
+    setLoading(true);
+    const t = setTimeout(() => {
+      setMetrics(randomizeMetrics());
+      setLineData(randomizeLineChart());
+      setBarSeries(randomizeBarChartSeries());
+      setPieSeries(randomizePieChartSeries());
+      setTable(randomizeTable());
+      setLoading(false);
+    }, 400);
     return () => clearTimeout(t);
   }, []);
 
@@ -85,15 +126,59 @@ export default function OverviewPage() {
     const interval = setInterval(() => {
       setMetrics(randomizeMetrics());
       setLineData(randomizeLineChart());
-      setBarData(randomizeBarChart());
-      setPieData(randomizePieChart());
+      setBarSeries(randomizeBarChartSeries());
+      setPieSeries(randomizePieChartSeries());
       setTable(randomizeTable());
-    }, 5000); // update every 5 seconds
+    }, 5000);
     return () => clearInterval(interval);
   }, [loading]);
 
+  function isInRange(dateStr: string) {
+    const d = new Date(dateStr);
+    return d >= dateRange.startDate && d <= dateRange.endDate;
+  }
+
+  const filteredLineData = lineData ? lineData.filter(d => isInRange(d.date)) : [];
+  const filteredBarData = CAMPAIGNS.map(name => ({
+    name,
+    value: barSeries ? barSeries.filter(d => d.name === name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0) : 0
+  }));
+  const filteredPieData = SOURCES.map(source => ({
+    name: source.name,
+    color: source.color,
+    value: pieSeries ? pieSeries.filter(d => d.name === source.name && isInRange(d.date)).reduce((sum, d) => sum + d.value, 0) : 0
+  }));
+
+  const filteredTable = CAMPAIGNS.map(campaign => {
+    const rows = table ? table.filter(d => d.campaign === campaign && isInRange(d.date)) : [];
+    if (rows.length === 0) {
+      const impressions = getRandomInt(100, 500);
+      return {
+        campaign,
+        impressions,
+        clicks: 0,
+        conversions: 0,
+        ctr: '0%',
+        cvr: '0%',
+        date: ''
+      };
+    }
+    const impressions = rows.reduce((sum, d) => sum + d.impressions, 0);
+    const clicks = rows.reduce((sum, d) => sum + d.clicks, 0);
+    const conversions = rows.reduce((sum, d) => sum + d.conversions, 0);
+    const ctr = (rows.reduce((sum, d) => sum + parseFloat(d.ctr), 0) / rows.length).toFixed(1) + '%';
+    const cvr = (rows.reduce((sum, d) => sum + parseFloat(d.cvr), 0) / rows.length).toFixed(1) + '%';
+    return { campaign, impressions, clicks, conversions, ctr, cvr, date: '' };
+  });
+
   return (
     <>
+      <div className="w-full flex flex-col md:flex-row md:items-center gap-4 md:gap-8 justify-between mb-6">
+        <div>
+          <span className="font-semibold text-lg mr-2">Date Range:</span>
+          <PopoverDateRangePicker range={dateRange} onChange={setDateRange} />
+        </div>
+      </div>
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/10">
           <div className="flex flex-col items-center">
@@ -144,15 +229,15 @@ export default function OverviewPage() {
           <>
             <Card className="col-span-1">
               <div className="text-base font-semibold mb-2">Revenue Trend</div>
-              <LineChart data={lineChartData} />
+              <LineChart data={filteredLineData} />
             </Card>
             <Card className="col-span-1">
               <div className="text-base font-semibold mb-2">Top Campaigns</div>
-              <BarChart data={barChartData} />
+              <BarChart data={filteredBarData} />
             </Card>
             <Card className="col-span-1">
               <div className="text-base font-semibold mb-2">Traffic Sources</div>
-              <PieChart data={pieChartData} />
+              <PieChart data={filteredPieData} />
             </Card>
           </>
         )}
@@ -175,8 +260,8 @@ export default function OverviewPage() {
               ))}
             </div>
           </div>
-        ) : table ? (
-          <DataTable columns={columns} data={table} />
+        ) : filteredTable.length ? (
+          <DataTable columns={columns} data={filteredTable} />
         ) : null}
       </div>
     </section>
